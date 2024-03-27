@@ -1,0 +1,160 @@
+{
+    "s3Bucket": [
+        {
+        "name": "nexxt-frontend",
+        "region": "Canada (Central) ca-central-1",
+        "permissions": {
+            "bucketPolicy": {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Sid": "PublicReadGetObject",
+                        "Effect": "Allow",
+                        "Principal": "*",
+                        "Action": "s3:GetObject",
+                        "Resource": "arn:aws:s3:::nexxt-frontend/*"
+                    }
+                ]
+            }
+        }
+        },
+        {
+            "name": "nexxt-lambda",
+            "region": "Canada (Central) ca-central-1"
+        }
+    ],
+    "lambdaFunction": [
+        {
+            "name": "insert_nexxt",
+            "runtime": "Node.js 20.x",
+            "handler": "index.handler",
+            "code": {
+                "s3Bucket": "nexxt-lambda",
+                "s3Key": "insert_aws_complete.zip"
+            },
+            "permissions": {
+                "executionRole": "arn:aws:iam::336801937559:role/lambda-execution-role"
+            }
+        },
+        {
+            "name": "fetch_all_nexxt",
+            "runtime": "Node.js 20.x",
+            "handler": "index.handler",
+            "code": {
+                "s3Bucket": "nexxt-lambda",
+                "s3Key": "fetch_all_aws_complete.zip"
+            },
+            "permissions": {
+                "executionRole": "arn:aws:iam::336801937559:role/lambda-execution-role"
+            }
+        },
+        {
+            "name": "fetch_single_nexxt",
+            "runtime": "Node.js 20.x",
+            "handler": "index.handler",
+            "code": {
+                "s3Bucket": "nexxt-lambda",
+                "s3Key": "fetch_single_aws_complete.zip"
+            },
+            "permissions": {
+                "executionRole": "arn:aws:iam::336801937559:role/lambda-execution-role"
+            }
+        },
+        {
+            "name": "update_nexxt",
+            "runtime": "Node.js 20.x",
+            "handler": "index.handler",
+            "code": {
+                "s3Bucket": "nexxt-lambda",
+                "s3Key": "update_aws_complete.zip"
+            },
+            "permissions": {
+                "executionRole": "arn:aws:iam::336801937559:role/lambda-execution-role"
+            }
+        }
+    ],
+    "apiGateway": {
+      "name": "nexxt",
+      "endpoints": [
+        {
+          "path": "/save",
+          "method": "POST",
+          "integration": {
+            "type": "lambda-proxy",
+            "lambdaFunction": "insert_nexxt"
+          }
+        },
+        {
+          "path": "/id",
+          "method": "GET",
+          "integration": {
+            "type": "lambda-proxy",
+            "lambdaFunction": "fetch_all_nexxt"
+          }
+        },
+        {
+          "path": "/id/{id}",
+          "method": "GET",
+          "integration": {
+            "type": "lambda-proxy",
+            "lambdaFunction": "fetch_single_nexxt"
+          }
+        },
+        {
+          "path": "/id/{id}",
+          "method": "PUT",
+          "integration": {
+            "type": "lambda-proxy",
+            "lambdaFunction": "update_nexxt"
+          }
+        }
+      ]
+    },
+    "policy": {
+      "name": "lambda-execution-policy",
+      "statements": [
+        {
+          "effect": "Allow",
+          "actions": [
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents"
+        ],
+          "resources": ["arn:aws:logs:*:*:*"]
+        },
+        {
+          "effect": "Allow",
+          "actions": [
+            "lambda:InvokeFunction",
+            "lambda:GetFunctionConfiguration"
+        ],
+          "resources": ["*"]
+        }
+      ]
+    },
+    "role": {
+      "name": "lambda-execution-role ",
+      "permissions": {
+        "attachedPolicies": ["lambda-execution-policy"]
+      }
+    },
+    "cloudWatchLogs": [
+        {
+        "logGroupName": "/aws/lambda/insert_nexxt",
+        "retentionPeriod": "30"
+        },
+        {
+        "logGroupName": "/aws/lambda/fetch_all_nexxt",
+        "retentionPeriod": "30"
+        },
+        {
+        "logGroupName": "/aws/lambda/fetch_single_nexxt",
+        "retentionPeriod": "30"
+        },
+        {
+        "logGroupName": "/aws/lambda/update_nexxt",
+        "retentionPeriod": "30"
+        }
+    ]
+  }
+  
